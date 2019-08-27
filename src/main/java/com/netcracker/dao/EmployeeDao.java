@@ -30,7 +30,7 @@ public class EmployeeDao {
         errorMap.put(2290,"Employee Id should be 6 digits only and should not start with 0");
     }
 
-    final public RowMapper<Employee> employeeRowMapper = (resultSet, rowNumber) -> {
+    public final RowMapper<Employee> employeeRowMapper = (resultSet, rowNumber) -> {
         Employee employee = new Employee();
         employee.setEmployeeId(resultSet.getInt("EMPLOYEE_ID"));
         employee.setFirstName(resultSet.getString("FIRST_NAME"));
@@ -46,7 +46,7 @@ public class EmployeeDao {
     };
 
     public  int getEmployeeCount() {
-        return jdbcTemplate.queryForObject(Constant.getEmployeeCount,Integer.class);
+        return jdbcTemplate.queryForObject(Constant.COUNT_FROM_EMPTABLE,Integer.class);
     }
 
     public String updateEmployee(Employee employee) {
@@ -63,7 +63,7 @@ public class EmployeeDao {
                 employee.getEmployeeId()
         };
         try{
-             jdbcTemplate.update(Constant.updateEmployeeById, objects);
+             jdbcTemplate.update(Constant.UPDATE_EMPLOYEE_BY_ID, objects);
              return "true";
         }catch (UncategorizedSQLException ae) {
             EmployeeDao.intializeErrorMap();
@@ -93,7 +93,7 @@ public class EmployeeDao {
                 employee.getBasePay()
         };
         try {
-            jdbcTemplate.update(Constant.addNewEmployee, objects);
+            jdbcTemplate.update(Constant.INSERT_INTO_EMPTABLE_VALUES, objects);
             return "true";
         } catch (UncategorizedSQLException ae) {
             EmployeeDao.intializeErrorMap();
@@ -111,12 +111,12 @@ public class EmployeeDao {
     }
 
     public List<Employee> getAllEmployees() {
-        return jdbcTemplate.query(Constant.getAllEmployees, employeeRowMapper);
+        return jdbcTemplate.query(Constant.SELECT_FROM_EMPTABLE, employeeRowMapper);
     }
 
     public Employee getEmployeeById(Employee employee) {
         Object[] objects = new Object[]{employee.getEmployeeId()};
-        List<Employee> list = jdbcTemplate.query(Constant.getEmployeeById, objects, employeeRowMapper);
+        List<Employee> list = jdbcTemplate.query(Constant.SELECT_FROM_EMPTABLE_WHERE_EMPLOYEE_ID, objects, employeeRowMapper);
         if(list.isEmpty()){
             return null;
         }else {
@@ -127,7 +127,7 @@ public class EmployeeDao {
 
     public List<Employee> getNextEmployees(int offset,int limit) {
         Object[] objects = new Object[]{offset+limit,offset};
-        return jdbcTemplate.query(Constant.showNextOrPreviousEmployees,objects,employeeRowMapper);
+        return jdbcTemplate.query(Constant.SHOW_NEXT_OR_PREVIOUS_EMPLOYEES,objects,employeeRowMapper);
     }
 }
 

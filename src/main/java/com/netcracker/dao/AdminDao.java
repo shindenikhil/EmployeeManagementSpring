@@ -15,7 +15,7 @@ public class AdminDao {
 
     public Admin getAdminByUsernameAndPassword(Admin admin){
         Object[] objects = new Object[]{admin.getUsername(),admin.getPassword()};
-        int i = jdbcTemplate.queryForObject(Constant.getAdminByUsernameAndPassword,objects, Integer.class);
+        int i = jdbcTemplate.queryForObject(Constant.USERNAME_AND_PASSWORD,objects, Integer.class);
         if(i == 1){
             return admin;
         }
