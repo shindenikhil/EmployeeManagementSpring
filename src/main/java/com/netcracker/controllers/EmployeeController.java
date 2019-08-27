@@ -1,17 +1,14 @@
 package com.netcracker.controllers;
 
-import com.netcracker.dao.EmployeeDao;
+
 import com.netcracker.dto.Employee;
 import com.netcracker.services.EmployeeServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +79,6 @@ public class EmployeeController {
                 model.addAttribute("employee",new Employee());
                 return "searchEmployee";
             }else{
-                System.out.println(message);
                 model.addAttribute("errorMessage",message);
                 model.addAttribute("employee",new Employee());
                 return "searchEmployee";
@@ -147,20 +143,28 @@ public class EmployeeController {
         }
     }
 
+    @RequestMapping(value = "recordsPerPage.html",method = RequestMethod.POST)
+    public String showRecordsPerPage(@ModelAttribute("employee")Employee employee, HttpSession session){
+        session.removeAttribute("limit");
+        session.setAttribute("limit",employee.getCount());
+        return "redirect:showAllEmployees.html?next=null";
+    }
 
     @RequestMapping(value = "/showAllEmployees.html",method = RequestMethod.GET)
-    public String showAllEmployees(@ModelAttribute("next")String next,Model model,HttpSession session){
-        System.out.println(next);
+    public String showAllEmployees(@ModelAttribute("next")String next,@ModelAttribute("employee")Employee employee, Model model,HttpSession session){
+
         if(next.equals("null")){
             if(session.getAttribute("username")!=null){
                 int offset = (int) session.getAttribute("offset");
+                int limit = (int) session.getAttribute("limit");
                 if(offset< employeeServices.getEmployeeCount()){
                     offset = 0;
                     session.removeAttribute("offset");
                     session.setAttribute("offset",offset);
                 }
-                List<Employee> allEmployees = employeeServices.getNextEmployees(offset);
+                List<Employee> allEmployees = employeeServices.getNextEmployees(offset,limit);
                 model.addAttribute("allEmployees",allEmployees);
+                model.addAttribute("employee", new Employee());
                 return "allEmployees";
             }else{
                 return "redirect:index.html";
@@ -169,12 +173,13 @@ public class EmployeeController {
         if(next.equals("true")){
             if(session.getAttribute("username")!=null){
                 int offset = (int) session.getAttribute("offset");
+                int limit = (int) session.getAttribute("limit");
                 if(offset< employeeServices.getEmployeeCount()){
-                    offset = offset + 5;
+                    offset = offset + limit;
                     session.removeAttribute("offset");
                     session.setAttribute("offset",offset);
                 }
-                List<Employee> allEmployees = employeeServices.getNextEmployees(offset);
+                List<Employee> allEmployees = employeeServices.getNextEmployees(offset,limit);
                 model.addAttribute("allEmployees",allEmployees);
                 return "allEmployees";
             }else{
@@ -184,12 +189,13 @@ public class EmployeeController {
         if(next.equals("false")){
             if(session.getAttribute("username")!=null){
                 int offset = (int) session.getAttribute("offset");
+                int limit = (int) session.getAttribute("limit");
                 if(offset>=0){
-                    offset = offset - 5;
+                    offset = offset - limit;
                     session.removeAttribute("offset");
                     session.setAttribute("offset",offset);
                 }
-                List<Employee> allEmployees = employeeServices.getNextEmployees(offset);
+                List<Employee> allEmployees = employeeServices.getNextEmployees(offset,limit);
                 model.addAttribute("allEmployees",allEmployees);
                 return "allEmployees";
             }else{

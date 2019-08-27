@@ -2,7 +2,6 @@ package com.netcracker.services;
 
 import com.netcracker.dao.EmployeeDao;
 import com.netcracker.dto.Employee;
-import com.netcracker.utility.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,8 +46,8 @@ public class EmployeeServices {
         return employeeDao.updateEmployee(employee);
     }
 
-    public List<Employee> getNextEmployees(int offset) {
-        return employeeDao.getNextEmployees(offset);
+    public List<Employee> getNextEmployees(int offset,int limit) {
+        return employeeDao.getNextEmployees(offset,limit);
     }
 
     public int getEmployeeCount() {

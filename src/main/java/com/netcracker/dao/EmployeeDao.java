@@ -3,23 +3,16 @@ package com.netcracker.dao;
 import com.netcracker.dto.Employee;
 import com.netcracker.utility.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableMBeanExport;
-import org.springframework.dao.DataAccessException;
+
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 @Repository
 public class EmployeeDao {
@@ -34,11 +27,10 @@ public class EmployeeDao {
         errorMap.put(2291,"Department Not found");
         errorMap.put(1438,"Employee Id must be 6 digits");
         errorMap.put(1,"Employee already exist");
-        errorMap.put(2291,"Department Not found");
         errorMap.put(2290,"Employee Id should be 6 digits only and should not start with 0");
     }
 
-    public RowMapper<Employee> employeeRowMapper = (resultSet, rowNumber) -> {
+    final public RowMapper<Employee> employeeRowMapper = (resultSet, rowNumber) -> {
         Employee employee = new Employee();
         employee.setEmployeeId(resultSet.getInt("EMPLOYEE_ID"));
         employee.setFirstName(resultSet.getString("FIRST_NAME"));
@@ -61,8 +53,8 @@ public class EmployeeDao {
         Object[] objects = new Object[]{
                 employee.getFirstName(),
                 employee.getLastName(),
-                java.sql.Date.valueOf(employee.getDateOfJoining().toString()),
-                java.sql.Date.valueOf(employee.getDateOfBirth().toString()),
+                java.sql.Date.valueOf(employee.getDateOfJoining()),
+                java.sql.Date.valueOf(employee.getDateOfBirth()),
                 employee.getDepartmentId(),
                 employee.getGrade(),
                 employee.getDesignation(),
@@ -74,21 +66,15 @@ public class EmployeeDao {
              jdbcTemplate.update(Constant.updateEmployeeById, objects);
              return "true";
         }catch (UncategorizedSQLException ae) {
-            ae.printStackTrace();
             EmployeeDao.intializeErrorMap();
             return errorMap.get(ae.getSQLException().getErrorCode());
-
-//            return ae.getMessage();
         }catch (DataIntegrityViolationException ae){
             if(ae.getCause().toString().equals("java.sql.SQLIntegrityConstraintViolationException: ORA-02291: integrity constraint (HR.SYS_C007076) violated - parent key not found\n")){
                 return "Department with id "+employee.getDepartmentId()+" not found";
             }else{
                 return "Employee Id should be 6 digits only and should not start with 0";
             }
-//            return "Employee Id should be 6 digits only and should not start with 0";
-//            return ae.getRootCause().toString();
         }catch (Exception ae){
-            ae.printStackTrace();
             return "Exception:"+ae.getMessage();
         }
     }
@@ -98,8 +84,8 @@ public class EmployeeDao {
                 employee.getEmployeeId(),
                 employee.getFirstName(),
                 employee.getLastName(),
-                java.sql.Date.valueOf(employee.getDateOfJoining().toString()),
-                java.sql.Date.valueOf(employee.getDateOfBirth().toString()),
+                java.sql.Date.valueOf(employee.getDateOfJoining()),
+                java.sql.Date.valueOf(employee.getDateOfBirth()),
                 employee.getDepartmentId(),
                 employee.getGrade(),
                 employee.getDesignation(),
@@ -110,21 +96,16 @@ public class EmployeeDao {
             jdbcTemplate.update(Constant.addNewEmployee, objects);
             return "true";
         } catch (UncategorizedSQLException ae) {
-            ae.printStackTrace();
             EmployeeDao.intializeErrorMap();
              return errorMap.get(ae.getSQLException().getErrorCode());
 
-//            return ae.getMessage();
         }catch (DataIntegrityViolationException ae){
             if(ae.getCause().toString().equals("java.sql.SQLIntegrityConstraintViolationException: ORA-02291: integrity constraint (HR.SYS_C007076) violated - parent key not found\n")){
                 return "Department with id "+employee.getDepartmentId()+" not found";
             }else{
                 return "Employee Id should be 6 digits only and should not start with 0";
             }
-//            return "Employee Id should be 6 digits only and should not start with 0";
-//            return ae.getRootCause().toString();
         }catch (Exception ae){
-            ae.printStackTrace();
             return "Exception:"+ae.getMessage();
         }
     }
@@ -136,9 +117,6 @@ public class EmployeeDao {
     public Employee getEmployeeById(Employee employee) {
         Object[] objects = new Object[]{employee.getEmployeeId()};
         List<Employee> list = jdbcTemplate.query(Constant.getEmployeeById, objects, employeeRowMapper);
-        for (Employee employee1 : list) {
-            System.out.println(employee1.toString());
-        }
         if(list.isEmpty()){
             return null;
         }else {
@@ -147,8 +125,8 @@ public class EmployeeDao {
     }
 
 
-    public List<Employee> getNextEmployees(int offset) {
-        Object[] objects = new Object[]{offset+5,offset};
+    public List<Employee> getNextEmployees(int offset,int limit) {
+        Object[] objects = new Object[]{offset+limit,offset};
         return jdbcTemplate.query(Constant.showNextOrPreviousEmployees,objects,employeeRowMapper);
     }
 }

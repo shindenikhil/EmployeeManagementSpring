@@ -2,7 +2,6 @@ package com.netcracker.services;
 
 import com.netcracker.dao.AdminDao;
 import com.netcracker.dto.Admin;
-import com.netcracker.utility.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

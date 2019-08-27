@@ -17,7 +17,7 @@ public class AdminController {
     @Autowired
     private AdminServices adminServices;
 
-    @RequestMapping("/index.html")
+    @RequestMapping(value = "/index.html",method = RequestMethod.GET)
     public String getLoginForm(Model model) {
         model.addAttribute("admin", new Admin());
         return "login";
@@ -29,6 +29,7 @@ public class AdminController {
         if (adminServices.getAdminByUsernameAndPassword(admin) != null) {
             session.setAttribute("username", admin.getUsername());
             session.setAttribute("offset",0);
+            session.setAttribute("limit",5);
             return "adminHomepage";
         } else {
             model.addAttribute("message", "Invalid credentials");
@@ -39,7 +40,7 @@ public class AdminController {
 
     }
 
-    @RequestMapping("/logout.html")
+    @RequestMapping(value = "/logout.html",method = RequestMethod.POST)
     public String logoutAdmin(Model model, HttpSession session) {
         session.invalidate();
         model.addAttribute("logoutMessage", "Successfully logged out");

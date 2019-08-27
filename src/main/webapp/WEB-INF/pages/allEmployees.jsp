@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <title>All employees</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -39,6 +39,20 @@
             All employees(Showing 5 records per page)
         </div>
         <div class="card-body">
+                <form:form modelAttribute="employee" action="recordsPerPage.html" method="post">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Set records per page</span>
+                    </div>
+
+<%--                    <input name="count" type="number" class="form-control" placeholder="records per page"--%>
+<%--                           required>--%>
+                    <form:input type="number" cssClass="form-control" path="count" placeholder="Records per page" required="required"></form:input>
+
+                    <input type="submit" class="btn btn-info" value="update">
+                </div>
+                </form:form>
+            <hr>
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -57,16 +71,16 @@
                 <tbody>
                 <c:forEach var="employee" items="${allEmployees}">
                     <tr >
-                        <td scope="col">${employee.employeeId}</td>
-                        <td scope="col">${employee.firstName}</td>
-                        <td scope="col">${employee.lastName}</td>
-                        <td scope="col">${employee.dateOfJoining}</td>
-                        <td scope="col">${employee.dateOfBirth}</td>
-                        <td scope="col">${employee.departmentId}</td>
-                        <td scope="col">${employee.grade}</td>
-                        <td scope="col">${employee.designation}</td>
-                        <td scope="col">${employee.gender}</td>
-                        <td scope="col">${employee.basePay}</td>
+                        <td>${employee.employeeId}</td>
+                        <td>${employee.firstName}</td>
+                        <td>${employee.lastName}</td>
+                        <td>${employee.dateOfJoining}</td>
+                        <td>${employee.dateOfBirth}</td>
+                        <td>${employee.departmentId}</td>
+                        <td>${employee.grade}</td>
+                        <td>${employee.designation}</td>
+                        <td>${employee.gender}</td>
+                        <td>${employee.basePay}</td>
                     </tr>
                 </c:forEach>
                 </tbody>
